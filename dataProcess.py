@@ -54,7 +54,6 @@ properties = {"user":"root","password":"root123","driver":"com.mysql.cj.jdbc.Dri
 rdd.write.jdbc(url=jdbc_url, table=tableName, mode="overwrite", properties=properties)
 
 
-"""
 
 
 
@@ -104,7 +103,6 @@ plt.xticks(billing_per_year.index)
 plt.show()
 
 
-"""
 
 
 
