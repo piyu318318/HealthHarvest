@@ -3,7 +3,6 @@ from matplotlib.ticker import FuncFormatter
 import matplotlib.pyplot as plt
 import pandas as pd
 from pyspark.sql import functions as F
-from pyspark.sql import functions as F
 
 from configparser import ConfigParser
 
