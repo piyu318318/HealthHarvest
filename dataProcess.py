@@ -5,11 +5,26 @@ import pandas as pd
 from pyspark.sql import functions as F
 from pyspark.sql import functions as F
 
+from configparser import ConfigParser
 
-spark = SparkSession.builder.appName("read 1 crore data").config("spark.jars",
-                                                                 r"C:\Users\dixit\PycharmProjects\pythonProgram\HealthHarvest\mysqlJar\mysql-connector-j-9.1.0.jar").getOrCreate()
+config = ConfigParser()
+config.read('databaseConfig.properties')
+databaseName = config.get('DEFAULT', 'databaseName')
+host = config.get('DEFAULT', 'host')
+user = config.get('DEFAULT', 'user')
+password = config.get('DEFAULT', 'password')
+port = config.get('DEFAULT', 'port')
+tableName = config.get('DEFAULT', 'tableName')
 
-filepath = r"C:/Users/dixit/PycharmProjects/pythonProgram/20kdata.csv"
+
+spark = SparkSession.builder \
+    .appName("read 1 crore data") \
+    .config("spark.jars", r"C:\Users\dixit\PycharmProjects\pythonProgram\HealthHarvest\mysqlJar\mysql-connector-j-9.1.0.jar") \
+    .config("spark.local.dir", r"C:\Users\dixit\TempSpark") \
+    .getOrCreate()
+
+
+filepath = r"data.csv"
 
 rdd = spark.read.csv(filepath, header=True, inferSchema=True)
 
@@ -28,6 +43,18 @@ rdd = rdd.withColumnRenamed("Name", "Patient_Name") \
     .withColumnRenamed("Medication", "Prescribed_Medication") \
     .withColumnRenamed("Test Results", "Test_Results") \
     .withColumnRenamed("city", "city")
+
+
+rdd.show(2)
+
+
+
+jdbc_url = f"jdbc:mysql://localhost:3306/{databaseName}"
+properties = {"user":"root","password":"root123","driver":"com.mysql.cj.jdbc.Driver"}
+rdd.write.jdbc(url=jdbc_url, table=tableName, mode="overwrite", properties=properties)
+
+
+"""
 
 
 
@@ -77,9 +104,7 @@ plt.xticks(billing_per_year.index)
 plt.show()
 
 
+"""
 
 
-# databaseName = "pysparkproject"
-# jdbc_url = f"jdbc:mysql://localhost:3306/{databaseName}"
-# properties = {"user":"root","password":"root123","driver":"com.mysql.cj.jdbc.Driver"}
-# rdd.write.jdbc(url=jdbc_url, table="patient_records", mode = "append", properties=properties)
+
